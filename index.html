@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ta Destinée — Histoire Interactive</title>
+
+    <style>
+        /* ═══════════════════════════════════════════════════
+           CSS MODERNE — Flexbox + Grid (demandé par l'énoncé)
+        ═══════════════════════════════════════════════════ */
+
+        /* Reset simple */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Corps : Flexbox pour centrer la carte */
+        body {
+            background-color: #111111;
+            color: #f0e6d3;
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+
+            /* Flexbox (séance 1) */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* ── Classe utilitaire cachée ─────────────────────
+           Séance 4 : classList.add("hidden") cache l'élément
+        ── */
+        .hidden {
+            display: none !important;
+        }
+
+        /* ── Carte principale ─────────────────────────── */
+        .carte {
+            background-color: #1c1c1c;
+            border: 1px solid #333333;
+            border-radius: 12px;
+            max-width: 620px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        /* ── En-tête ──────────────────────────────────── */
+        .entete {
+            text-align: center;
+            padding: 20px;
+            border-bottom: 1px solid #2a2a2a;
+        }
+
+        .entete h1 {
+            font-size: 26px;
+            color: #c9940a;
+        }
+
+        .entete p {
+            font-size: 13px;
+            color: #666666;
+            margin-top: 5px;
+        }
+
+        /* ═══════════════════════════════════════════════
+           ÉCRAN 1 — Formulaire
+        ═══════════════════════════════════════════════ */
+        #ecran-formulaire {
+            padding: 30px;
+        }
+
+        #ecran-formulaire h2 {
+            color: #c9940a;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        /* Grid pour organiser les champs (CSS Grid demandé) */
+        .grille-formulaire {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        /* Le champ prénom prend toute la largeur */
+        .groupe-plein {
+            grid-column: 1 / -1;
+        }
+
+        .groupe label {
+            display: block;
+            font-size: 12px;
+            color: #999999;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+
+        .groupe input,
+        .groupe select {
+            width: 100%;
+            background-color: #252525;
+            border: 1px solid #444444;
+            border-radius: 8px;
+            color: #f0e6d3;
+            font-size: 15px;
+            padding: 11px 14px;
+            font-family: Arial, sans-serif;
+        }
+
+        .groupe input:focus,
+        .groupe select:focus {
+            outline: none;
+            border-color: #c9940a;
+        }
+
+        .groupe select option {
+            background-color: #252525;
+        }
+
+        /* ── Boutons ────────────────────────────────── */
+        .btn {
+            width: 100%;
+            padding: 13px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: Arial, sans-serif;
+            margin-top: 6px;
+        }
+
+        .btn-or {
+            background-color: #c9940a;
+            color: #111111;
+        }
+
+        .btn-or:hover {
+            background-color: #e0a80c;
+        }
+
+        .btn-gris {
+            background-color: transparent;
+            border: 1px solid #555555;
+            color: #999999;
+        }
+
+        .btn-gris:hover {
+            border-color: #c9940a;
+            color: #c9940a;
+        }
+
+        /* ═══════════════════════════════════════════════
+           ÉCRAN 2 — Reprendre / Nouvelle partie
+        ═══════════════════════════════════════════════ */
+        #ecran-reprise {
+            padding: 30px;
+            text-align: center;
+        }
+
+        #ecran-reprise h2 {
+            color: #c9940a;
+            margin-bottom: 10px;
+        }
+
+        #ecran-reprise p {
+            color: #999999;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 22px;
+        }
+
+        #nom-joueur-reprise {
+            color: #f0e6d3;
+            font-weight: bold;
+        }
+
+        /* Flexbox pour aligner les boutons côte à côte */
+        .boutons-reprise {
+            display: flex;
+            gap: 12px;
+        }
+
+        .boutons-reprise .btn {
+            flex: 1;
+            margin-top: 0;
+        }
+
+        /* ═══════════════════════════════════════════════
+           ÉCRAN 3 — Jeu
+        ═══════════════════════════════════════════════ */
+        #ecran-jeu {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Image de la scène */
+        #image-scene {
+            width: 100%;
+            height: 210px;
+            object-fit: cover;
+            display: block;
+            background-color: #222222;
+        }
+
+        /* Corps de la scène */
+        .corps-scene {
+            padding: 22px;
+        }
+
+        #titre-scene {
+            font-size: 19px;
+            color: #c9940a;
+            margin-bottom: 10px;
+        }
+
+        #texte-scene {
+            font-size: 15px;
+            line-height: 1.75;
+            color: #cccccc;
+            margin-bottom: 22px;
+        }
+
+        /* Zone des choix : Flexbox colonne */
+        #zone-choix {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* Bouton de choix */
+        .bouton-choix {
+            width: 100%;
+            background-color: #252525;
+            border: 1px solid #444444;
+            border-left: 3px solid #c9940a;
+            color: #f0e6d3;
+            font-size: 14px;
+            padding: 13px 16px;
+            text-align: left;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: Arial, sans-serif;
+            transition: background-color 0.2s;
+        }
+
+        .bouton-choix:hover {
+            background-color: #2e2e2e;
+            border-left-color: #e0a80c;
+        }
+
+        /* Zone de fin */
+        #zone-fin {
+            margin-top: 16px;
+            padding: 20px;
+            background-color: #1a1000;
+            border: 1px solid #c9940a;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        #zone-fin h3 {
+            color: #c9940a;
+            font-size: 17px;
+            margin-bottom: 10px;
+        }
+
+        #texte-fin {
+            font-size: 14px;
+            color: #cccccc;
+            line-height: 1.65;
+            margin-bottom: 16px;
+        }
+
+        /* Pied de l'écran jeu */
+        .pied-jeu {
+            padding: 10px 22px;
+            border-top: 1px solid #2a2a2a;
+            text-align: right;
+        }
+
+        #btn-changer-joueur {
+            background: transparent;
+            border: none;
+            color: #555555;
+            font-size: 12px;
+            cursor: pointer;
+            text-decoration: underline;
+            font-family: Arial, sans-serif;
+        }
+
+        #btn-changer-joueur:hover {
+            color: #888888;
+        }
+
+        /* ═══════════════════════════════════════════════
+           RESPONSIVE — s'adapte aux petits écrans
+        ═══════════════════════════════════════════════ */
+        @media (max-width: 500px) {
+            .grille-formulaire {
+                grid-template-columns: 1fr;
+            }
+            .groupe-plein {
+                grid-column: 1;
+            }
+            .boutons-reprise {
+                flex-direction: column;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- ═══════════════════════════════════════════════════
+         HTML5 SÉMANTIQUE (demandé par l'énoncé)
+    ═══════════════════════════════════════════════════ -->
+
+    <div class="carte">
+
+        <!-- En-tête -->
+        <header class="entete">
+            <h1>Ta Destinée</h1>
+            <p>Histoire dont tu es le héros</p>
+        </header>
+
+        <!-- ── ÉCRAN 1 : Formulaire ───────────────────── -->
+        <section id="ecran-formulaire">
+            <h2>Qui es-tu ?</h2>
+
+            <!--
+                Séance 4 : addEventListener("submit") dans main.js
+                novalidate = on gère la validation nous-mêmes en JS
+            -->
+            <form id="formulaire" novalidate>
+
+                <!-- CSS Grid : les champs sont organisés en grille -->
+                <div class="grille-formulaire">
+
+                    <!-- Prénom : pleine largeur -->
+                    <div class="groupe groupe-plein">
+                        <label for="champ-prenom">Ton prénom *</label>
+                        <input
+                            id="champ-prenom"
+                            type="text"
+                            placeholder="Entre ton prénom unique"
+                            maxlength="30"
+                            autocomplete="off"
+                        />
+                    </div>
+
+                    <!-- Âge -->
+                    <div class="groupe">
+                        <label for="champ-age">Ton âge</label>
+                        <input
+                            id="champ-age"
+                            type="number"
+                            placeholder="Ex : 16"
+                            min="10"
+                            max="99"
+                        />
+                    </div>
+
+                    <!-- Préférence -->
+                    <div class="groupe">
+                        <label for="champ-pref">Ta passion</label>
+                        <select id="champ-pref">
+                            <option value="">— Choisis —</option>
+                            <option value="sport">⚽ Le sport</option>
+                            <option value="tech">💻 La tech</option>
+                            <option value="cuisine">🍳 La cuisine</option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <button type="submit" class="btn btn-or">
+                    Commencer l'aventure →
+                </button>
+
+            </form>
+        </section>
+
+        <!-- ── ÉCRAN 2 : Reprendre ou Nouvelle partie ─── -->
+        <!--
+            class="hidden" → display:none par défaut
+            Séance 4 : JS enlève "hidden" via classList.remove()
+        -->
+        <section id="ecran-reprise" class="hidden">
+            <h2>Bienvenue de retour !</h2>
+            <p>
+                Une partie existe pour
+                <strong id="nom-joueur-reprise"></strong>.
+                Que veux-tu faire ?
+            </p>
+            <div class="boutons-reprise">
+                <button id="btn-reprendre"      class="btn btn-or">
+                    ▶ Reprendre
+                </button>
+                <button id="btn-nouvelle-partie" class="btn btn-gris">
+                    ↺ Nouvelle partie
+                </button>
+            </div>
+        </section>
+
+        <!-- ── ÉCRAN 3 : Jeu ──────────────────────────── -->
+        <section id="ecran-jeu" class="hidden">
+
+            <!-- Image mise à jour par ui.js -->
+            <img id="image-scene" src="" alt="Illustration de la scène" />
+
+            <div class="corps-scene">
+
+                <!-- Titre et texte mis à jour par ui.js -->
+                <h2 id="titre-scene"></h2>
+                <p  id="texte-scene"></p>
+
+                <!--
+                    Les boutons de choix sont créés ici dynamiquement
+                    par ui.js via le <template> ci-dessous
+                -->
+                <div id="zone-choix"></div>
+
+                <!-- Zone de fin : cachée jusqu'à la fin de l'histoire -->
+                <div id="zone-fin" class="hidden">
+                    <h3>🎉 Fin de l'histoire</h3>
+                    <p id="texte-fin"></p>
+                    <button id="btn-rejouer" class="btn btn-or">
+                        ↺ Rejouer
+                    </button>
+                </div>
+
+            </div>
+
+            <div class="pied-jeu">
+                <button id="btn-changer-joueur">
+                    Changer de joueur
+                </button>
+            </div>
+
+        </section>
+
+    </div><!-- fin .carte -->
+
+    <!--
+    ═══════════════════════════════════════════════════════
+    TEMPLATE — Séance 4
+    Invisible dans le DOM tant que JS ne le clone pas.
+    Utilisé par ui.js : templateChoix.content.cloneNode(true)
+    ═══════════════════════════════════════════════════════
+    -->
+    <template id="template-choix">
+        <button class="bouton-choix" type="button"></button>
+    </template>
+
+    <!--
+    ═══════════════════════════════════════════════════════
+    SCRIPT — Séance 1 : type="module" = méthode finale
+    Les modules font un defer implicite (DOM prêt avant JS).
+    Pas de JS directement dans le HTML → bonne pratique du cours.
+    ═══════════════════════════════════════════════════════
+    -->
+    <script type="module" src="js/main.js"></script>
+
+</body>
+</html>

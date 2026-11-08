@@ -1,5 +1,5 @@
 /**
- * @module main
+ * @module main   
  * @description Point d'entrée de l'application.
  *              Gère le formulaire, la session et orchestre les modules.
  *              Séance 4 : addEventListener, sessionStorage, localStorage
@@ -37,6 +37,7 @@ const btnReprendre      = document.querySelector("#btn-reprendre");
 const btnNouvellePartie = document.querySelector("#btn-nouvelle-partie");
 const btnChangerJoueur  = document.querySelector("#btn-changer-joueur");
 const btnRejouer        = document.querySelector("#btn-rejouer");
+const test   = "bonjour"
 
 // ─── INITIALISATION ───────────────────────────────────────────────────────────
 
